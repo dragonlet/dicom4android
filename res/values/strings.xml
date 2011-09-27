@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, CollabBoard!</string>
+    <string name="app_name">MeddClient</string>
+    <string name="main_menu_create_account">Creation de compte</string>
+    <string name="main_menu_set_account">Gerer les status de compte</string>
+    <string name="main_menu_set_passwd">Changement de Passwd</string>
+    <string name="main_menu_set_connect">Demarer la Connection</string>
+    <string name="main_menu_quit">quitter l\'application</string>
+</resources>
