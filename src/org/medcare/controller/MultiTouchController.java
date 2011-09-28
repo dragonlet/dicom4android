@@ -408,7 +408,8 @@ public class MultiTouchController<ImageController> {
 			if (!mCurrPt.isDown()) {
 				// First finger was released, stop dragging
 				mMode = MODE_NOTHING;
-				multitouchImageController.sendRemotes(selectedObject + "," + mCurrXform.toString());
+Log.e("NOMBRE", "MODE_DRAG sendRemotes " + "ACTION_MOVE," + selectedObject + "," + mCurrXform.toString());
+				multitouchImageController.sendRemotes("ACTION_MOVE," + selectedObject + "," + mCurrXform.toString());
 				multitouchImageController.selectObject((selectedObject = -1), mCurrPt);
 			} else if (mCurrPt.isMultiTouch()) {
 				// Point 1 was already down and point 2 was just placed down
@@ -439,8 +440,9 @@ public class MultiTouchController<ImageController> {
 				if (!mCurrPt.isDown()) {
 					// Dropped both points, go back to doing nothing
 					mMode = MODE_NOTHING;
+Log.e("NOMBRE", "MODE_PINCH sendRemotes " + "ACTION_MOVE," + selectedObject + "," + mCurrXform.toString());
+					multitouchImageController.sendRemotes("ACTION_MOVE," + selectedObject + "," + mCurrXform.toString());
 					multitouchImageController.selectObject((selectedObject = -1), mCurrPt);
-					multitouchImageController.sendRemotes(selectedObject + "," + mCurrXform.toString());
 				} else {
 					// Just dropped point 2, downgrade to a single-point drag
 					mMode = MODE_DRAG;

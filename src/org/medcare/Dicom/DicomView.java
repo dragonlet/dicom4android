@@ -273,6 +273,7 @@ public class DicomView extends SurfaceView implements SurfaceHolder.Callback, Mu
 		 */
 
 		public boolean action(String arg) {
+			Log.i("NOMBRE", "action arg [" + arg + "]");
 			sendRemotes(arg);
 			return (localAction(arg));
 		}
@@ -280,7 +281,7 @@ public class DicomView extends SurfaceView implements SurfaceHolder.Callback, Mu
 		public boolean localAction(String arg) {
 			if (arg == null || arg.equals(""))
 				return false;
-			Log.i("XMPPClient", "localAction arg [" + arg + "]");
+			Log.i("NOMBRE", "localAction arg [" + arg + "]");
 			if (imageControllers.size() > 0) {
 				Log.i("XMPPClient", "localAction "
 						+ getImageController(0).getImageName() + " arg [" + arg

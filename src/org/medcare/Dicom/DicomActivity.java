@@ -34,6 +34,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -187,12 +188,15 @@ public class DicomActivity extends Activity {
 	   static final int NONE = 0;
 	   static final int DRAG = 1;
 	   static final int ZOOM = 2;
+	private static final long XMPP_GAP = 1000;
 	   int mode = NONE;
 
 	   // Remember some things for zooming
 	   PointF start = new PointF();
 	   PointF mid = new PointF();
 	   float oldDist = 1f;
+	private long sendRemotesTime;
+	private long lastSendRemotesTime = -1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -1391,17 +1395,28 @@ public class DicomActivity extends Activity {
 	}
 	
 	public boolean sendRemotes(String arg) {
-		Log.e("NOMBRE", "sendRemotes " + arg);
+		Log.d(TAG, "sendRemotes " + arg);
 		if (connection == null) {
-			Log.e(TAG, "sendRemotes Please Login First");
+			Log.d(TAG, "sendRemotes Please Login First");
 			return false;
 		}
 		String to = getXmppRemoteUser();
 
-		Log.i("XMPPClient", "Sending text [" + arg + "] to [" + to + "]");
+		
 		Message msg = new Message(to, Message.Type.chat);
 		msg.setBody(arg);
+		sendRemotesTime = Calendar.getInstance().getTimeInMillis();
+		//To avoid xmpp account to be blocked
+		if ((lastSendRemotesTime > 0) && ((sendRemotesTime - lastSendRemotesTime) < XMPP_GAP)) {
+			try {
+				Thread.sleep(1000 - (sendRemotesTime - lastSendRemotesTime));
+			} catch (InterruptedException e) {
+				Log.e(TAG, e.toString());
+			}
+		}
+		Log.i("NOMBRE", "Sending text [" + arg + "] to [" + to + "]");
 		connection.sendPacket(msg);
+		lastSendRemotesTime = sendRemotesTime;
 		return true;
 	}
 	public XMPPConnection getConnection() {
@@ -1587,6 +1602,7 @@ public class DicomActivity extends Activity {
 					+ connection.getHost());
 			Log.e("XMPPClient", ex.toString());
 			setConnection(null);
+			return;
 		}
 		try {
 			Log.i("XMPPClient", "[SettingsDialog] trying login as " + username
