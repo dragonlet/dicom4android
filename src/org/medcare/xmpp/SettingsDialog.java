@@ -20,7 +20,10 @@ import org.medcare.R;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,6 +48,7 @@ public class SettingsDialog extends Activity implements
 	String SERVICE = "gmail.com";
 	String ME = "account@gmail.com";
 	String DEFAULT_REMOTE = "osfe.org@gmail.com";
+	private SharedPreferences mSharedPreferences;
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -61,14 +65,24 @@ public class SettingsDialog extends Activity implements
 		mUsername = (EditText) findViewById(R.id.userid);
 		mPassword = (EditText) findViewById(R.id.password);
 		mRemoteUser = (EditText) findViewById(R.id.remote_userid);
-		mHost.setText(DEFAULT_HOST);
-		mPort.setText(DEFAULT_PORT);
-		mService.setText(SERVICE);
-		mUsername.setText(ME);
-		mRemoteUser.setText(DEFAULT_REMOTE);
+		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		mHost.setText(mSharedPreferences.getString("Host", DEFAULT_HOST));
+		mPort.setText(mSharedPreferences.getString("Port", DEFAULT_PORT));
+		mService.setText(mSharedPreferences.getString("Service", SERVICE));
+		mUsername.setText(mSharedPreferences.getString("Username", ME));
+		mPassword.setText(mSharedPreferences.getString("Password", ""));
+		mRemoteUser.setText(mSharedPreferences.getString("RemoteUser", DEFAULT_REMOTE));
 	}
 
 	public void onClick(View v) {
+		Editor editor = mSharedPreferences.edit();
+        editor.putString("Host", mHost.getText().toString());
+        editor.putString("Port", mPort.getText().toString());
+        editor.putString("Service", mService.getText().toString());
+        editor.putString("Username", mUsername.getText().toString());
+        editor.putString("Password", mPassword.getText().toString());
+        editor.putString("RemoteUser", mRemoteUser.getText().toString());
+        editor.commit();
 		resultBundle.putString("host", mHost.getText().toString());
 		resultBundle.putString("port", mPort.getText().toString());
 		resultBundle.putString("service", mService.getText().toString());

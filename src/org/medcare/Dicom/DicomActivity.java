@@ -38,7 +38,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.http.HttpResponse;
@@ -47,22 +46,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
-import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.filter.MessageTypeFilter;
-import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.packet.Registration;
 import org.medcare.R;
 import org.medcare.controller.MultiTouchController.PositionAndScale;
 import org.medcare.xmpp.Account;
-import org.medcare.xmpp.AccountCreate;
-import org.medcare.xmpp.AccountSetter;
 import org.medcare.xmpp.CollabBoard;
-import org.medcare.xmpp.PasswdSetter;
 import org.medcare.xmpp.SettingsDialog;
 
 import android.app.Activity;
@@ -139,10 +131,7 @@ public class DicomActivity extends Activity {
 	private static final int NM_MONO2_16_13x_heart = R_MONO1_10_chest + 1;
 	private static final int XA_MONO2_8_12x_catheter = NM_MONO2_16_13x_heart + 1;
 
-	private static final int CREATE_ACCOUNT = XA_MONO2_8_12x_catheter + 1;
-	private static final int SET_ACCOUNT = CREATE_ACCOUNT + 1;
-	private static final int SET_PASSWD = SET_ACCOUNT + 1;
-	private static final int SET_CONNECT = SET_PASSWD + 1;
+	private static final int SET_CONNECT = XA_MONO2_8_12x_catheter + 1;
 	private static final int QUIT = SET_CONNECT + 1;
 
 	private static final int initialise_MENU_ITEM = QUIT + 1;
@@ -260,9 +249,6 @@ public class DicomActivity extends Activity {
 		divMenu.add(DIV, NM_MONO2_16_13x_heart, 2, "NM-MONO2-16-13x-heart");
 		divMenu.add(DIV, XA_MONO2_8_12x_catheter, 3, "XA-MONO2-8-12x-catheter");
 
-		collabMenu.add(COLLAB, CREATE_ACCOUNT, 0, getString(R.string.main_menu_create_account));
-		collabMenu.add(COLLAB, SET_ACCOUNT, 1, getString(R.string.main_menu_set_account));
-		collabMenu.add(COLLAB, SET_PASSWD, 2, getString(R.string.main_menu_set_passwd));
 		collabMenu.add(COLLAB, SET_CONNECT, 3, getString(R.string.main_menu_set_connect));
 		collabMenu.add(COLLAB, QUIT, 4, getString(R.string.main_menu_quit));
 
@@ -351,18 +337,6 @@ public class DicomActivity extends Activity {
 		case XA_MONO2_8_12x_catheter:
 			alertImage("XA-MONO2-8-12x-catheter");
 			break;
-		case CREATE_ACCOUNT:
-			startActivityForResult(new Intent(this, AccountCreate.class),
-					ACCOUNT_CREATE);
-			return true;
-		case SET_ACCOUNT:
-			startActivityForResult(new Intent(this, AccountSetter.class),
-					ACCOUNT_SETTER);
-			return true;
-		case SET_PASSWD:
-			startActivityForResult(new Intent(this, PasswdSetter.class),
-					PASSWD_SETTER);
-			return true;
 		case SET_CONNECT:
 			startActivityForResult(new Intent(this, SettingsDialog.class),
 					SETTING_DIALOG);
@@ -415,15 +389,6 @@ public class DicomActivity extends Activity {
 			locBundle = intent.getExtras();
 		if (locBundle != null) {
 			switch (requestCode) {
-			case ACCOUNT_CREATE:
-				createAccount(locBundle);
-				break;
-			case ACCOUNT_SETTER:
-				setupAccount(locBundle);
-				break;
-			case PASSWD_SETTER:
-				setupPasswd(locBundle);
-				break;
 			case SETTING_DIALOG:
 				connectionSettings(locBundle);
 				break;
@@ -569,6 +534,18 @@ public class DicomActivity extends Activity {
 		return;
 	}
 
+	public void alertMessage(String text) {
+		new AlertDialog.Builder(DicomActivity.this).setTitle("Alert")
+			.setMessage(text)
+			.setIcon(R.drawable.question).setPositiveButton("OK",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						Log.e(TAG, "alertImage..RESULT_OK ");
+					}
+				}).show();
+		return;
+	}
+	
 	// ouvre une image (ancien nom : init() )
 	public void ouvrirImage(String imageName) {
 		try {
@@ -1057,12 +1034,11 @@ public class DicomActivity extends Activity {
 	public void actionMove(String arg) {
 		// TODO Auto-generated method stub
 		String[] params = cutString(arg, ",");
-		int index = -1;
 		PositionAndScale newPosAndScale = new PositionAndScale();
 		if (params.length >= 2) {
-			index = Integer.parseInt(arg.substring(1,2));
-			newPosAndScale.fromString(arg.substring(2));
-			Log.e(TAG, "TESTDICOM selectDicom !!!!!!!!!!! index " + index);
+			int index = Integer.parseInt(params[1]);
+			newPosAndScale.fromString(arg.substring(arg.indexOf(params[1]) + 2));
+			Log.e("NOMBRE", "actionMove setPositionAndScale !!!!!!!!!!! index " + index + "args " + arg.substring(arg.indexOf(params[1]) + 2));
 			//PositionAndScale PointInfo
 			dicomView.setPositionAndScale(index, newPosAndScale);
 		}
@@ -1395,14 +1371,13 @@ public class DicomActivity extends Activity {
 	}
 	
 	public boolean sendRemotes(String arg) {
-		Log.d(TAG, "sendRemotes " + arg);
 		if (connection == null) {
 			Log.d(TAG, "sendRemotes Please Login First");
 			return false;
 		}
-		String to = getXmppRemoteUser();
 
-		
+		Log.d(TAG, "sendRemotes " + arg);
+		String to = getXmppRemoteUser();
 		Message msg = new Message(to, Message.Type.chat);
 		msg.setBody(arg);
 		sendRemotesTime = Calendar.getInstance().getTimeInMillis();
@@ -1419,6 +1394,7 @@ public class DicomActivity extends Activity {
 		lastSendRemotesTime = sendRemotesTime;
 		return true;
 	}
+	
 	public XMPPConnection getConnection() {
 		return connection;
 	}
@@ -1431,139 +1407,7 @@ public class DicomActivity extends Activity {
 	 */
 	public void setConnection(XMPPConnection connection) {
 		this.connection = connection;
-		if (connection != null) {
-			collabBoard.setConnection(connection);
-			PacketFilter filter = new MessageTypeFilter(Message.Type.chat);
-			// Add a packet listener to get messages sent to us
-			/* remplace par CollabBoard
-			connection.addPacketListener(new PacketListener() {
-				public void processPacket(Packet packet) {
-					final Message message = (Message) packet;
-					if (message.getBody() != null) {
-						String fromName = StringUtils.parseBareAddress(message
-								.getFrom());
-						Log.e(TAG, "GOT TEXT!!!!!!!!!!!!!!!!! [" + message.getBody()
-								+ "] from [" + fromName + "]");
-						// Add the incoming message to the list view
-						if (DicomActivity.this.xmppUsername != null && !DicomActivity.this.xmppUsername.equals(fromName)) {
-							mHandler.post(new Runnable() {
-								public void run() {
-									dicomThread.localAction(message.getBody());
-								}
-							});
-						}
-					}
-				}
-			}, filter);
-			*/
-		}
-	}
-
-	public void createAccount(Bundle locBundle) {
-		Log.i("XMPPClient", "createAccount");
-		if (connection == null) {
-			Log.e(TAG, "createAccount Please Login First");
-			return;
-		}
-		Bundle accountBundle = locBundle.getBundle("accountResults");
-		String username = accountBundle.getString("username");
-		String password = accountBundle.getString("password");
-
-		AccountManager accountManager = connection.getAccountManager();
-
-		if (accountManager.supportsAccountCreation()) {
-
-			try {
-				accountManager.createAccount(username, password);
-			} catch (XMPPException ex) {
-				Log.e(TAG, "Failed to Create Account: "
-						+ ex.getXMPPError().getMessage());
-			}
-		} else {
-			Log
-					.e(TAG,
-							"Sorry this server does not support creating an account");
-		}
-		try {
-			connection.login(username, password);
-			Log.i("XMPPClient", "Logged in as " + connection.getUser());
-
-			// Set the status to available
-			Presence presence = new Presence(Presence.Type.available);
-			connection.sendPacket(presence);
-			setConnection(connection);
-		} catch (XMPPException ex) {
-			int err = ex.getXMPPError().getCode();
-			Log.e(TAG, "[SettingsDialog] Failed to log in as " + username);
-			Log.e("XMPPClient", ex.toString());
-			setConnection(null);
-
-			// Responding to the various errors appropriately and allowing
-			// signing in on the fly
-			switch (err) {
-			case 401:
-			case 407:
-				Log.e(TAG, "Failed to Login you must Create Account"
-						+ ex.getXMPPError().getMessage());
-				return;
-
-			default:
-				Log.e(TAG, "Failed to Login" + ex.getXMPPError().getMessage());
-				return;
-			}
-		}
-	}
-
-	private void setupPasswd(Bundle locBundle) {
-		Log.i("XMPPClient", "setupPasswd");
-		if (connection == null) {
-			Log.e(TAG, "setupPasswd Please Login First");
-			return;
-		}
-		Bundle accountBundle = locBundle.getBundle("passwdResults");
-		String pw = accountBundle.getString("pwd");
-
-		AccountManager accountManager = connection.getAccountManager();
-		if (pw.length() > 0) {
-			try {
-				accountManager.changePassword(pw);
-			} catch (XMPPException ex) {
-				Log.e(TAG, "Failed to Chang Password: "
-						+ ex.getXMPPError().getMessage());
-			}
-			// register this change at the login object
-			// login.password = pw;
-			Log
-					.i(TAG,
-							"Changed Password\nPlease make a note for your new password");
-		}
-	}
-
-	private void setupAccount(Bundle locBundle) {
-		Log.i("XMPPClient", "setupAccount");
-		if (connection == null) {
-			Log.e(TAG, "setupAccount Please Login First");
-			return;
-		}
-		Bundle accountBundle = locBundle.getBundle("setupResults");
-		String fName = accountBundle.getString("fName");
-		String lName = accountBundle.getString("lName");
-		String city = accountBundle.getString("city");
-		String state = accountBundle.getString("state");
-		String zip = accountBundle.getString("zip");
-		String phone = accountBundle.getString("phone");
-		String email = accountBundle.getString("email");
-		String url = accountBundle.getString("url");
-		String text = accountBundle.getString("text");
-		account = new Account(fName, lName, email, city, state, zip, phone,
-				url, text);
-
-		Registration reg = new Registration();
-		Map<String, String> attributes = account.getMap();
-		for (String name : attributes.keySet()) {
-			reg.addAttribute(name, attributes.get(name));
-		}
-		connection.sendPacket(reg);
+		collabBoard.setConnection(connection);
 	}
 
 	public void connectionSettings(Bundle locBundle) {
@@ -1601,6 +1445,7 @@ public class DicomActivity extends Activity {
 			Log.e("XMPPClient", "[SettingsDialog] Failed to connect to "
 					+ connection.getHost());
 			Log.e("XMPPClient", ex.toString());
+			alertMessage("Failed to connect to " + host);
 			setConnection(null);
 			return;
 		}
@@ -1617,21 +1462,22 @@ public class DicomActivity extends Activity {
 		} catch (XMPPException ex) {
 			Log.e("XMPPClient", ex.toString());
 			Log.e(TAG, "[SettingsDialog] Failed to log in as " + username);
+			alertMessage("Failed to connect to " + username + " with pass " + password);
 			setConnection(null);
-			int err = ex.getXMPPError().getCode();
-			// Responding to the various errors appropriately and allowing
-			// signing in on the fly
-			switch (err) {
-			case 401:
-			case 407:
-				Log.e(TAG, "Failed to Login you must Create Account"
-						+ ex.getXMPPError().getMessage());
-				return;
-
-			default:
-				Log.e(TAG, "Failed to Login" + ex.getXMPPError().getMessage());
-				return;
+			if (ex.getXMPPError() != null) {
+				int err = ex.getXMPPError().getCode();
+				// Responding to the various errors appropriately and allowing
+				// signing in on the fly
+				switch (err) {
+				case 401:
+				case 407:
+					Log.e(TAG, "Failed to Login you must Create Account"
+							+ ex.getXMPPError().getMessage());
+				default:
+					Log.e(TAG, "Failed to Login" + ex.getXMPPError().getMessage());
+				}
 			}
+			return;
 		}
 	}
 

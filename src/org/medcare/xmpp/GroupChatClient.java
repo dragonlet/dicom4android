@@ -80,8 +80,10 @@ public class GroupChatClient implements PacketListener, Runnable, RosterListener
 				string = "[" + from + "]  " + msg.getBody();
 			else
 				string = msg.getBody();
-			Log.i(TAG, string);
+Log.i(TAG,"GROUPCHAT message" + string);
+Log.i("NOMBRE", "GROUPCHAT message" + string);
 		} else if (Presence.class.isInstance(packet)) {
+Log.i(TAG,"GROUPCHAT presence");
 			setRoster();
 		}
 	}

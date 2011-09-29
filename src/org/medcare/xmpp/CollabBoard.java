@@ -74,6 +74,7 @@ public class CollabBoard implements PacketListener,
 	 */
 	public void processPacket(Packet packet) {
 		Log.e(TAG, "GOT PACKET!!!!!!!! ");
+Log.e("NOMBRE", "CollabBoard GOT PACKET!!!!!!!! ");
 		if (Message.class.isInstance(packet)) {
 		} else if (Presence.class.isInstance(packet)) {
 		} else if (IQ.class.isInstance(packet)) {
@@ -85,7 +86,7 @@ public class CollabBoard implements PacketListener,
 			//if (msg.getBody() != null && type != Message.Type.groupchat && type != Message.Type.chat)
 			//ATTENTION ANDRE Pourquoi eliminer les groupChats ???
 			if (msg.getBody() != null && type != Message.Type.groupchat) {
-Log.e("NOMBRE", "[" + msg.getFrom() + "]  [Type:] " + msg.getType() + "\n" + msg.getBody());
+Log.e("NOMBRE", "CollabBoard [" + msg.getFrom() + "]  [Type:] " + msg.getType() + "\n" + msg.getBody());
 				Log.e(TAG, "[" + msg.getFrom() + "]  [Type:] " + msg.getType() + "\n" + msg.getBody());
 				String fromName = StringUtils.parseBareAddress(msg
 								.getFrom());
@@ -104,7 +105,7 @@ Log.e("NOMBRE", "[" + msg.getFrom() + "]  [Type:] " + msg.getType() + "\n" + msg
 			// If we got request to subscribe will approve it here automatically
 Presence.Type type = presence.getType();
 String from = presence.getFrom();
-Log.e(TAG, "GOT PRESENCE!!!!!!!! " + from + " type " + type);
+Log.e("NOMBRE", "CollabBoard GOT PRESENCE!!!!!!!! " + from + " type " + type);
 			if (type == Presence.Type.subscribe) {
 				
 				presence.setFrom(presence.getTo());
@@ -140,7 +141,6 @@ Log.e(TAG, "GOT PRESENCE!!!!!!!! " + from + " type " + type);
 	public void setConnection(XMPPConnection connection) {
 		this.connection = connection;
 		logged = true;
-		// FIXME accountSetter.setUserName(login.userName);
 		if (connection != null) {
 			// Add a packet listener to get messages sent to us
 			connection.addPacketListener(this, myFilter);
@@ -156,6 +156,7 @@ Log.e(TAG, "GOT PRESENCE!!!!!!!! " + from + " type " + type);
 	protected void chat(String jid, String nickName) {
 
 		if (connection == null || !logged) {
+			dicomActivity.alertMessage("Please Connect first");
 			Log.e(TAG, "Please Login");
 			return;
 		}
@@ -174,6 +175,7 @@ Log.e(TAG, "GOT PRESENCE!!!!!!!! " + from + " type " + type);
 	public void join(String room) {
 
 		if (connection == null) {
+			dicomActivity.alertMessage("Please Connect first");
 			Log.e(TAG, "Please Connect");
 			return;
 		}
@@ -182,7 +184,6 @@ Log.e(TAG, "GOT PRESENCE!!!!!!!! " + from + " type " + type);
 		if (rooms.containsKey(room)) {
 			try {
 				// Afficher
-				// tabbedPane.setSelectedComponent((GroupChatClient)rooms.get(room));
 				return;
 			} catch (Exception e) {/* go on bro */
 			}
@@ -204,6 +205,7 @@ Log.e(TAG, "GOT PRESENCE!!!!!!!! " + from + " type " + type);
 	public void quitRoom(String room) {
 
 		if (connection == null) {
+			dicomActivity.alertMessage("Please Connect first");
 			Log.e(TAG, "Please Connect");
 			return;
 		}
@@ -255,6 +257,7 @@ Log.e(TAG, "GOT PRESENCE!!!!!!!! " + from + " type " + type);
 	private void setRoster() {
 
 		if (connection == null) {
+			dicomActivity.alertMessage("Please Connect first");
 			Log.e(TAG, "Please Connect");
 			return;
 		}
@@ -329,7 +332,6 @@ Log.e(TAG, "GOT PRESENCE!!!!!!!! " + from + " type " + type);
 	Roster roster;
 	RosterEntry rosterSelection;
 	ChatClient client;
-	AccountSetter accountSetter;
 	String rosterSelectionString;
 	Map<String, String> usersMap;
 	Login login;
