@@ -212,7 +212,7 @@ public class DicomActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// SubMenu fileMenu = menu.addSubMenu("Fichier");
-		SubMenu editMenu = menu.addSubMenu("Traitement");
+		SubMenu editMenu = menu.addSubMenu("Processing");
 		// fileMenu.add(FILE, Quitter_MENU_ITEM, 1, "Quitter");
 		SubMenu ctMenu = menu.addSubMenu("CT");
 		SubMenu mrMenu = menu.addSubMenu("MR");
@@ -252,11 +252,11 @@ public class DicomActivity extends Activity {
 		collabMenu.add(COLLAB, SET_CONNECT, 3, getString(R.string.main_menu_set_connect));
 		collabMenu.add(COLLAB, QUIT, 4, getString(R.string.main_menu_quit));
 
-		editMenu.add(EDIT, initialise_MENU_ITEM, 0, "reInitialise");
+		editMenu.add(EDIT, initialise_MENU_ITEM, 0, "reInit");
 		editMenu.add(EDIT, zoomIn_MENU_ITEM, 1, "zoomIn");
 		editMenu.add(EDIT, zoomOut_MENU_ITEM, 2, "zoomOut");
-		editMenu.add(EDIT, multiseuillage_MENU_ITEM, 3, "multiseuillage");
-		editMenu.add(EDIT, binarisation_MENU_ITEM, 4, "binarisation");
+		editMenu.add(EDIT, multiseuillage_MENU_ITEM, 3, "thresholding");
+		editMenu.add(EDIT, binarisation_MENU_ITEM, 4, "binarization");
 		editMenu.add(EDIT, median_MENU_ITEM, 5, "median");
 		editMenu.add(EDIT, inversion_MENU_ITEM, 6, "inversion");
 		editMenu.add(EDIT, gradient_MENU_ITEM, 7, "gradient");

@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, CollabBoard!</string>
-    <string name="app_name">MeddClient</string>
-    <string name="main_menu_create_account">Creation de compte</string>
-    <string name="main_menu_set_account">Gerer les status de compte</string>
-    <string name="main_menu_set_passwd">Changement de Passwd</string>
-    <string name="main_menu_set_connect">Demarer la Connection</string>
-    <string name="main_menu_quit">quitter l\'application</string>
+    <string name="hello">Hello, CollabBoard!</string>
+    <string name="app_name">dicom4Android</string>
+    <string name="splash_screen">
+    Use multi-touch and Processing menu option to manipulate images\n\n
+    Menu->Plus->Collab->Start Connection \n
+    to set and start collaborative work \n\n
+    Click to start \n
+    Then select some images in menu to load them</string>
+    <string name="main_menu_set_account">Account settings</string>
+    <string name="main_menu_set_passwd">Change Passwd</string>
+    <string name="main_menu_set_connect">Start Connection</string>
+    <string name="main_menu_quit">quit dicom4android</string>
 </resources>
