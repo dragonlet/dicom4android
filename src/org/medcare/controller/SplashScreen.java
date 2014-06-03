@@ -34,7 +34,8 @@ public class SplashScreen extends Activity {
                 } finally {
                     finish();
                     startActivity(new Intent("org.medcare.Dicom.DicomActivity"));
-                    stop();
+                    //stop();
+                    interrupt();
                 }
             }
         };

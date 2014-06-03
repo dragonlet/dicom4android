@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -56,7 +55,7 @@ import org.medcare.controller.MultiTouchController.PositionAndScale;
 import org.medcare.xmpp.Account;
 import org.medcare.xmpp.CollabBoard;
 import org.medcare.xmpp.SettingsDialog;
-
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -68,6 +67,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.FloatMath;
@@ -84,6 +84,7 @@ import android.view.Window;
 import android.webkit.WebView;
 import android.widget.PopupWindow;
 
+@TargetApi(Build.VERSION_CODES.ECLAIR)
 public class DicomActivity extends Activity {
 
 	private static final int FILE = 0;

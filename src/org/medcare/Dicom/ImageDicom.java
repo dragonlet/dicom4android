@@ -555,7 +555,8 @@ class ImageDicomRead extends Thread {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException ie) {
-				t.stop();
+				//t.stop();
+				t.interrupt();
 				return;
 			}
 			// to = TimeOutDicom.isTimeOut();
